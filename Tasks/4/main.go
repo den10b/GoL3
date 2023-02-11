@@ -3,14 +3,18 @@ package main
 import (
 	"fmt"
 	"sort"
+	"strings"
 )
 
 func findAnagram(begin *[]string) *map[string]*[]string {
-	finMap := make(map[string]*[]string)
+	tempMap := make(map[string][]string)
+	checkMap := make(map[string]bool)
 	for _, word := range *begin {
+		if checkMap[strings.ToLower(word)] {
+			continue //проверяем встречалось ли слово
+		}
 		var charArray []rune
 		for _, char := range word {
-			fmt.Printf("%c ", char)
 			charArray = append(charArray, char)
 		}
 		var sortCharArray = make([]rune, len(charArray))
@@ -22,27 +26,32 @@ func findAnagram(begin *[]string) *map[string]*[]string {
 				return true
 			}
 		})
-		*finMap[string(sortCharArray)] = append(*finMap[string(sortCharArray)], string(charArray))
-		fmt.Println(finMap)
+		tempMap[strings.ToLower(string(sortCharArray))] = append(tempMap[string(sortCharArray)], strings.ToLower(string(charArray)))
 		charArray = make([]rune, 0)
+		checkMap[strings.ToLower(word)] = true
 	}
-	println(finMap)
-	//finMap2 := make(map[string][]string)
-	//for key, val := range finMap {
-	//	if len(val) <= 1 {
-	//		delete(finMap, key)
-	//
-	//	} else {
-	//		tmpKey:=val[0]
-	//		for index,word:=range val[1:]{
-	//			if index
-	//		}
-	//	}
-	//}
+	finMap := make(map[string]*[]string)
+	for key, val := range tempMap {
+		if len(val) <= 1 {
+			delete(tempMap, key)
+
+		} else {
+			tmpKey := val[0]
+			tmpArray := new([]string)
+			for _, word := range val {
+				*tmpArray = append(*tmpArray, word)
+			}
+			sort.Strings(*tmpArray)
+			finMap[tmpKey] = tmpArray
+		}
+	}
 	return &finMap
 }
 func main() {
-	beginStringArray := []string{"боб", "обб", "робб", "денис", "денси", "исден", "денис"}
+	beginStringArray := []string{"боб", "обб", "робб", "боб", "денис", "денси", "исден", "денис", "пятак", "пятка", "тяпка", "листок", "слиток", "столик"}
 	mapp := findAnagram(&beginStringArray)
 	fmt.Println(mapp)
+	for key, arr := range *mapp {
+		fmt.Printf("key: %s -> array: %s\n", key, arr)
+	}
 }
