@@ -80,23 +80,6 @@ func execute(line string, pipeInput string) (string, error) {
 		}
 
 	}
-	//newDir, err := os.Getwd()
-	//if err != nil {
-	//}
-	//fmt.Printf("Current Working Direcotry: %s\n", newDir)
-	//target := "Tasks"
-	//os.Chdir(filepath.Join(newDir, target))
-	//newDir, err = os.Getwd()
-	//if err != nil {
-	//}
-	//fmt.Printf("Current Working Direcotry: %s\n", newDir)
-	//os.Chdir(filepath.Dir(newDir))
-	//
-	//newDir, err = os.Getwd()
-	//if err != nil {
-	//}
-	//fmt.Printf("Current Working Direcotry: %s\n", newDir)
-	return "OK", nil
 }
 
 func main() {
