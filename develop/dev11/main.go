@@ -9,21 +9,18 @@ import (
 	"sync"
 )
 
-func configureRoutes(serveMux *http.ServeMux, storeServer *handler.StoreServer) {
+func main() {
+
+	serveMux := http.NewServeMux()
+	store := service.NewStore(&sync.Mutex{}, make(map[int]service.EventCalendar))
+	storeServer := handler.NewStoreServer(store)
+
 	serveMux.HandleFunc("/create_event", storeServer.HandlerCreateEvent)
 	serveMux.HandleFunc("/update_event", storeServer.HandlerUpdateEvent)
 	serveMux.HandleFunc("/delete_event", storeServer.HandlerDeleteEvent)
 	serveMux.HandleFunc("/events_for_day", storeServer.HandlerEventsForDay)
 	serveMux.HandleFunc("/events_for_week", storeServer.HandlerEventsForWeek)
 	serveMux.HandleFunc("/events_for_month", storeServer.HandlerEventsForMonth)
-}
-
-func main() {
-
-	serveMux := http.NewServeMux()
-	store := service.NewStore(&sync.Mutex{}, make(map[int]service.EventCalendar))
-	storeServer := handler.NewStoreServer(store)
-	configureRoutes(serveMux, storeServer)
 
 	login := middleware.Logging(serveMux)
 

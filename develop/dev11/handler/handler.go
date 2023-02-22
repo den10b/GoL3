@@ -2,13 +2,16 @@ package handler
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"main/service"
 	"net/http"
 	"strconv"
 	"time"
 )
+
+type StoreServer struct {
+	store *service.StoreServer
+}
 
 func NewStoreServer(store *service.StoreServer) *StoreServer {
 	return &StoreServer{store: store}
@@ -53,8 +56,7 @@ func (ss *StoreServer) HandlerDeleteEvent(w http.ResponseWriter, r *http.Request
 		http.Error(w, errDelete.Error(), 503)
 		return
 	}
-
-	RenderJSON(w, "Element deleted")
+	RenderJSON(w, "Событие удалено!")
 }
 
 func (ss *StoreServer) HandlerEventsForDay(w http.ResponseWriter, r *http.Request) {
@@ -103,7 +105,7 @@ func handlerDataPost(r *http.Request) (int, time.Time, string, error) {
 	if idString != "" {
 		idInt, err := strconv.Atoi(idString)
 		if err != nil {
-			return 0, time.Time{}, "", errors.New("400: invalid int")
+			return 0, time.Time{}, "", fmt.Errorf("400: некорректное число")
 		}
 		id = idInt
 	}
@@ -113,7 +115,7 @@ func handlerDataPost(r *http.Request) (int, time.Time, string, error) {
 		dateString += "T00:00:00Z"
 		dateTime, err := time.Parse(time.RFC3339, dateString)
 		if err != nil {
-			return 0, time.Time{}, "", errors.New("400: invalid date")
+			return 0, time.Time{}, "", fmt.Errorf("400: некоррректная дата")
 		}
 		date = dateTime
 	}

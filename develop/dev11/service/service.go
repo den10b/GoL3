@@ -1,11 +1,21 @@
 package service
 
 import (
-	"errors"
+	"fmt"
 	"reflect"
 	"sync"
 	"time"
 )
+
+type EventCalendar struct {
+	Date time.Time
+	Mes  string
+}
+
+type StoreServer struct {
+	m     *sync.Mutex
+	store map[int]EventCalendar
+}
 
 func NewStore(m *sync.Mutex, store map[int]EventCalendar) *StoreServer {
 	return &StoreServer{m: m, store: store}
@@ -32,9 +42,8 @@ func (ss *StoreServer) UpdateEvent(id int, date time.Time, mes string) (EventCal
 	ss.m.Lock()
 	defer ss.m.Unlock()
 
-	//возвращаем ошибку если элемента нте
 	if reflect.DeepEqual(ss.store[id], EventCalendar{}) {
-		return EventCalendar{}, errors.New("503: invalid element")
+		return EventCalendar{}, fmt.Errorf("503: такое событие отсутствует")
 	}
 
 	event := EventCalendar{date, mes}
@@ -49,7 +58,7 @@ func (ss *StoreServer) DeleteEvent(id int) error {
 	defer ss.m.Unlock()
 
 	if reflect.DeepEqual(ss.store[id], EventCalendar{}) {
-		return errors.New("503: No event for delete")
+		return fmt.Errorf("503: такое событие отсутствует")
 	}
 
 	delete(ss.store, id)
@@ -66,7 +75,7 @@ func (ss *StoreServer) EventsForDay(date time.Time, days int) ([]EventCalendar, 
 		}
 	}
 	if len(result) == 0 {
-		return []EventCalendar{}, errors.New("503: Invalid event")
+		return []EventCalendar{}, fmt.Errorf("503: такое событие отсутствует")
 	}
 
 	return result, nil
